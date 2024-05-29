@@ -1,10 +1,42 @@
 # Parcial Final 
 **Integrantes**
-- Ana Sofia Lopez - 2205432
+- Ana Sofia Lopez - 2205077
 - Juan Sebastian Varona Parra - 2205432
 
 ## Prometheus y Node Explorer
-Te dejo esto a ti ana la 🐸
+Inicialmente despues de hacer la instalación de Prometheus, en el directorio que ya habiamos creado descargamos con `wget` la actualizacion de Prometheus. 
+Damos los permisos correspondientes:
+```
+sudo chown prometheus:prometheus /usr/local/bin/prometheus
+sudo chown prometheus:prometheus /usr/local/bin/promtool
+```
+Al ingresar a `/etc/systemd/system/prometheus.service` incluimos las siguientes lineas: 
+```
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target
+```
+Proximamente despuesd e verificar e iniciar el servicio de Prometheus verificamos el ufw `sudo ufw allow 9090/tcp` por lo que al ingresar por la web a la ip 192.168.50.3:9090, tenemos la interfaz de Prometheus.
+
+Para Node debemos instalar con los siguiente comandos
+`wget https://github.com/prometheus/node_exporter/releases/download/v1.8.1/node_exporter-1.8.1.linux-amd64.tar.gz` 
+`sudo tar xvfz node_exporter-*.*-amd64.tar.gz`
+Ingresamos a node_exporter-1.8.1.linux-amd64 `./node_exporter`
+Si revisamos Prometheus observamos que podemos hacer uso de node exporter visulizandolo en las graficas que nos ofrece.
 
 ## Empaquetamiento Docker
 Clonamos el repo de [MiniWebApp](https://github.com/omondragon/MiniWebApp)
